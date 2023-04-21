@@ -46,7 +46,7 @@ class DataSlicer:
 
     def get_user_anti_test_dataset(self, test_user):
         #list of all movie IDs
-        movies = self.full_train_dataset().all_items()
+        movies = self.full_train_dataset.all_items()
         #list of movies that the test user has already rated
         rated_movies = [item for (item, rating) in self.full_train_dataset.ur[test_user]]
         #list of movies that the test user has not yet rated

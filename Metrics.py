@@ -8,7 +8,7 @@ class Metrics:
     def RMSE(predictions):
         return surprise.accuracy.rmse(predictions, verbose=False)
 
-    def get_top_ten(predictions, min_rating=4.0, n=10):
+    def get_top_n(predictions, min_rating=4.0, n=10):
         top_n = {}
         for user_id, movie_id, r_ui, estimated_rating, _ in predictions:
             if user_id in top_n:
@@ -24,11 +24,11 @@ class Metrics:
         
         return top_n
     
-    def hit_rate(topNPredicted, leftOutPredictions):
+    def hit_rate(top_n_predicted, leave_one_predictions):
         hits = 0
         total = 0
-        for user_id, movie_id in leftOutPredictions:
-            if user_id in topNPredicted and movie_id in [x[0] for x in topNPredicted[user_id]]:
+        for user_id, movie_id, r_ui, estimated_rating, _ in leave_one_predictions:
+            if user_id in top_n_predicted and movie_id in [x[0] for x in top_n_predicted[user_id]]:
                 hits += 1
             total += 1
         hit_rate = hits / total if total > 0 else 0
