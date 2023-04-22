@@ -31,20 +31,20 @@ class Movie:
     #     return movie_ranking
     
 
-    # def get_movie_genres(self):
-    #     df = pd.read_csv(self.moviesPath, usecols=['movieId', 'genres'])
-    #     all_genres = sorted(set('|'.join(df['genres']).split('|')))
-    #     movielens_data = df.to_dict('records')
-    #     movie_genre_dict = {}
-    #     for row in movielens_data:
-    #         movie_id = row['movieId']
-    #         genres = row['genres'].split('|')
-    #         genre_list = [0] * len(all_genres)
-    #         for genre in genres:
-    #             genre_index = all_genres.index(genre)
-    #             genre_list[genre_index] = 1
-    #         movie_genre_dict[movie_id] = genre_list
-    #     return movie_genre_dict
+    def get_movie_genres(self):
+        df = pd.read_csv(self.movies_path, usecols=['movieId', 'genres'])
+        all_genres = sorted(set('|'.join(df['genres']).split('|')))
+        movielens_data = df.to_dict('records')
+        movie_genre_dict = {}
+        for row in movielens_data:
+            movie_id = row['movieId']
+            genres = row['genres'].split('|')
+            genre_list = [0] * len(all_genres)
+            for genre in genres:
+                genre_index = all_genres.index(genre)
+                genre_list[genre_index] = 1
+            movie_genre_dict[movie_id] = genre_list
+        return movie_genre_dict
     
 
     def get_movie_name(self, movie_Id):
