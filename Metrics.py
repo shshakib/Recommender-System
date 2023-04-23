@@ -8,7 +8,7 @@ class Metrics:
     def RMSE(predictions):
         return surprise.accuracy.rmse(predictions, verbose=False)
 
-    def get_top_n(predictions, min_rating=4.0, n=10):
+    def get_top_n(predictions, n=10):
         top_n = {}
         for user_id, movie_id, r_ui, estimated_rating, _ in predictions:
             if user_id in top_n:

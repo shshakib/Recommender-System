@@ -32,9 +32,10 @@ class Movie:
     
 
     def get_movie_genres(self):
-        df = pd.read_csv(self.movies_path, usecols=['movieId', 'genres'])
-        all_genres = sorted(set('|'.join(df['genres']).split('|')))
-        movielens_data = df.to_dict('records')
+        movies_df = pd.read_csv(self.movies_path, usecols=['movieId', 'genres'])
+        self.movie_list = movies_df['movieId'].tolist()
+        all_genres = sorted(set('|'.join(movies_df['genres']).split('|')))
+        movielens_data = movies_df.to_dict('records')
         movie_genre_dict = {}
         for row in movielens_data:
             movie_id = row['movieId']

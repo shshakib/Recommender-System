@@ -13,6 +13,18 @@ class ContentBased(surprise.AlgoBase):
         self.knn = knn
         self.genres = movie_obj.get_movie_genres()
 
+        # n_movies = len(movie_obj.movie_list)
+        # self.similarity_matrix = np.zeros((n_movies, n_movies))
+        
+        # for i in range(n_movies):
+        #     for j in range(i+1, n_movies):
+        #         movie1 = movie_obj.movie_list[i]
+        #         movie2 = movie_obj.movie_list[j]
+        #         similarity = genre_similarity(movie1, movie2, self.genres) # function to calculate similarity between two movies
+        #         self.similarity_matrix[i,j] = similarity
+        #         self.similarity_matrix[j,i] = similarity
+        
+
     def fit(self, train_dataset):
         surprise.AlgoBase.fit(self, train_dataset)
         #print("Bulding content-based similarity matrix...")   
@@ -37,7 +49,6 @@ class ContentBased(surprise.AlgoBase):
             sumxy += x * y
         
         return sumxy/math.sqrt(sumxx*sumyy)
-    import numpy as np
 
     # def genre_similarity(self, movie_i, movie_j, genres):
     #     genres_i = genres[movie_i]
