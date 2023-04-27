@@ -40,6 +40,7 @@ class Methods:
                 pickle.dump(leave_one_predictions, open(file_path, 'wb'))
                 file_path = os.path.join(precomputed_folder, method_name + '_all_predictions.pkl')
                 pickle.dump(all_predictions, open(file_path, 'wb'))
+                
                 #Top n recommentaion for each user
                 top_n_predicted = Metrics.get_top_n(all_predictions, n)
                 metrics["HR"] = Metrics.hit_rate(top_n_predicted, leave_one_predictions)
@@ -64,7 +65,7 @@ class Methods:
 
         return metrics
     
-    def top_n_recommendation(self, movie_obj, test_user=85, compute = True):
+    def top_n_recommendation(self, movie_obj, test_user=85, compute = True, n=10):
         
         for method_name, method_obj in self.methods_dict.items():
             
@@ -91,8 +92,11 @@ class Methods:
                 if movie_obj.get_movie_name(int(movie_id)) != '':
                     recommendations.append((int(movie_id), estimated_rating))
             
+            #print((recommendations[150:160]))
             recommendations.sort(key=lambda x: x[1], reverse=True)
+            #print((recommendations[150:160]))
             
-            print("{:<10} {:<40} {:<10}".format("ID", "Name", "Estimated Rating"))
-            for ratings in recommendations[:10]:
+            print("{:<10} {:<40} {:<10}".format("ID", "Name", "Rating"))
+            for ratings in recommendations[:n]:
                 print("{:<10} {:<40} {:<10.4f}".format(ratings[0], movie_obj.get_movie_name(ratings[0]), ratings[1]))
+            #del recommendations

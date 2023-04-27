@@ -45,12 +45,14 @@ class DataSlicer:
         return self.leave_one_out_antitest_dataset
 
     def get_user_anti_test_dataset(self, test_user):
-        #list of all movie IDs
-        movies = self.full_train_dataset.all_items()
-        #list of movies that the test user has already rated
-        rated_movies = [item for (item, rating) in self.full_train_dataset.ur[test_user]]
-        #list of movies that the test user has not yet rated
-        anti_testset = [(test_user, item, 0) for item in movies if item not in rated_movies]
-
+        # return anti_testset
+        train_set = self.full_train_dataset
+        fill = train_set.global_mean
+        anti_testset = []
+        u = train_set.to_inner_uid(str(test_user))
+        user_items = set([j for (j, _) in train_set.ur[u]])
+        anti_testset += [(train_set.to_raw_uid(u), train_set.to_raw_iid(i), fill) for
+                                 i in train_set.all_items() if
+                                 i not in user_items]
         return anti_testset
 

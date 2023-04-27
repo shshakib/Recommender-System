@@ -13,17 +13,6 @@ class ContentBased(surprise.AlgoBase):
         self.knn = knn
         self.genres = movie_obj.get_movie_genres()
 
-        # n_movies = len(movie_obj.movie_list)
-        # self.similarity_matrix = np.zeros((n_movies, n_movies))
-        
-        # for i in range(n_movies):
-        #     for j in range(i+1, n_movies):
-        #         movie1 = movie_obj.movie_list[i]
-        #         movie2 = movie_obj.movie_list[j]
-        #         similarity = genre_similarity(movie1, movie2, self.genres) # function to calculate similarity between two movies
-        #         self.similarity_matrix[i,j] = similarity
-        #         self.similarity_matrix[j,i] = similarity
-        
 
     def fit(self, train_dataset):
         surprise.AlgoBase.fit(self, train_dataset)
@@ -31,33 +20,28 @@ class ContentBased(surprise.AlgoBase):
         self.similarities = np.zeros((train_dataset.n_items, train_dataset.n_items))
         for movie_i in tqdm(range(train_dataset.n_items)):
             for movie_j in range(movie_i+1, train_dataset.n_items):
-                genre_similarity = self.genre_similarity(int(train_dataset.to_raw_iid(movie_i)), int(train_dataset.to_raw_iid(movie_j)), self.genres)
-                self.similarities[movie_i, movie_j] = genre_similarity
-                self.similarities[movie_j, movie_i] = genre_similarity
+                
+                #Calculate similarity
+                #genre_similarity = self.genre_similarity(int(train_dataset.to_raw_iid(movie_i)), int(train_dataset.to_raw_iid(movie_j)), self.genres)
+                # genres_i = self.genres[int(train_dataset.to_raw_iid(movie_i))]
+                # genres_j = self.genres[int(train_dataset.to_raw_iid(movie_j))]
+                # sum_ii = np.dot(genres_i, genres_i)
+                # sum_jj = np.dot(genres_j, genres_j)
+                # sum_ij = np.dot(genres_i, genres_j)
+                # genre_similarity = sum_ij/math.sqrt(sum_ii * sum_jj)
+                # self.similarities[movie_i, movie_j] = genre_similarity
+                # self.similarities[movie_j, movie_i] = genre_similarity
+                genres_i = self.genres[int(train_dataset.to_raw_iid(movie_i))]
+                genres_j = self.genres[int(train_dataset.to_raw_iid(movie_j))]
+                sum_ii, sum_ij, sum_jj = 0, 0, 0
+                for idx in range(len(genres_i)):
+                    i = genres_i[idx]
+                    j = genres_j[idx]
+                    sum_ii += i * i
+                    sum_jj += j * j
+                    sum_ij += i * j
 
         return self
-    
-    def genre_similarity(self, movie_i, movie_j, genres):
-        genres_i = genres[movie_i]
-        genres_j = genres[movie_j]
-        sumxx, sumxy, sumyy = 0, 0, 0
-        for i in range(len(genres_i)):
-            x = genres_i[i]
-            y = genres_j[i]
-            sumxx += x * x
-            sumyy += y * y
-            sumxy += x * y
-        
-        return sumxy/math.sqrt(sumxx*sumyy)
-
-    # def genre_similarity(self, movie_i, movie_j, genres):
-    #     genres_i = genres[movie_i]
-    #     genres_j = genres[movie_j]
-    #     sumxx = np.dot(genres_i, genres_i)
-    #     sumyy = np.dot(genres_j, genres_j)
-    #     sumxy = np.dot(genres_i, genres_j)
-    
-    #     return sumxy / np.sqrt(sumxx * sumyy)
     
 
     def estimate(self, u, i):
@@ -65,26 +49,25 @@ class ContentBased(surprise.AlgoBase):
         if not (self.trainset.knows_user(u) and self.trainset.knows_item(i)):
             raise surprise.PredictionImpossible('User and/or item is unkown.')
         
-        # Build up similarity scores between this item and everything the user rated
+        #Similarity between this item and everything the user rated
         neighbors = []
         for rating in self.trainset.ur[u]:
-            genreSimilarity = self.similarities[i,rating[0]]
-            neighbors.append( (genreSimilarity, rating[1]) )
+            neighbors.append( (self.similarities[i,rating[0]], rating[1]) )
         
-        # Extract the top-K most-similar ratings
+        #Top-K most-similar ratings
         k_neighbors = heapq.nlargest(self.knn, neighbors, key=lambda t: t[0])
         
-        # Compute average sim score of K neighbors weighted by user ratings
-        simTotal = weightedSum = 0
-        for (simScore, rating) in k_neighbors:
-            if (simScore > 0):
-                simTotal += simScore
-                weightedSum += simScore * rating
+        #Average similarity score of K neighbors weighted by user ratings
+        sim_total = weighted_sum = 0
+        for (sim_score, rating) in k_neighbors:
+            if (sim_score > 0):
+                sim_total += sim_score
+                weighted_sum += sim_score * rating
             
-        if (simTotal == 0):
+        if (sim_total == 0):
             raise surprise.PredictionImpossible('No neighbors')
 
-        predictedRating = weightedSum / simTotal
+        predicted_rating = weighted_sum / sim_total
 
-        return predictedRating
+        return predicted_rating
     
