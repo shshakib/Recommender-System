@@ -5,8 +5,10 @@ class Metrics:
     def MAE(predictions):
         return surprise.accuracy.mae(predictions, verbose=False)
 
+
     def RMSE(predictions):
         return surprise.accuracy.rmse(predictions, verbose=False)
+
 
     def get_top_n(predictions, n=10):
         top_n = {}
@@ -23,7 +25,8 @@ class Metrics:
             top_n[user_id] = top_n[user_id][:n]
         
         return top_n
-    
+
+
     def hit_rate(top_n_predicted, leave_one_predictions):
         hits = 0
         total = 0

@@ -15,6 +15,7 @@ class Movie:
 
         return data
     
+    
     def get_movie_genres(self):
         movies_df = pd.read_csv(self.movies_path, usecols=['movieId', 'genres'])
         self.movie_list = movies_df['movieId'].tolist()

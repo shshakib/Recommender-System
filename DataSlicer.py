@@ -22,27 +22,35 @@ class DataSlicer:
         
         #anti-test-set
         self.leave_one_out_antitest_dataset = self.leave_one_out_train.build_anti_testset()
-            
+
+
     def get_full_train_dataset(self):
         return self.full_train_dataset
-    
+
+
     def get_full_antitest_dataset(self):
         return self.full_antitest_dataset
- 
+
+
     def get_train_dataset(self):
         return self.train_dataset
-    
+
+
     def get_test_dataset(self):
         return self.test_dataset
-    
+
+
     def get_leave_one_out_train_dataset(self):
         return self.leave_one_out_train
-    
+
+
     def get_leave_one_out_test_dataset(self):
         return self.leave_one_out_test
-    
+
+
     def get_leave_one_out_antitest_dataset(self):
         return self.leave_one_out_antitest_dataset
+
 
     def get_user_anti_test_dataset(self, test_user):
         # return anti_testset

@@ -66,6 +66,7 @@ class ContentBased(surprise.AlgoBase):
             
         if (sim_total == 0):
             raise surprise.PredictionImpossible('No neighbors')
+            #return 0
 
         predicted_rating = weighted_sum / sim_total
 

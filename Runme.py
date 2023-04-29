@@ -13,6 +13,7 @@ ratings_path = os.path.join(script_dir, 'Data', 'ratings.csv')
 movies_path = os.path.join(script_dir, 'Data', 'movies.csv')
 
 my_seed = 85
+test_user = 15
 np.random.seed(my_seed)
 random.seed(my_seed)
 
@@ -35,5 +36,5 @@ print("Prepairing the dataset (train/test)...")
 methods_obj = Methods(dataset, methods_dict, script_dir)
 
 print("Running algorithms on the dataset...")
-methods_obj.Evaluate(n = 20, compute = False) #Set compute to False to load the precomputed predictions.
-methods_obj.top_n_recommendation(movie_obj, compute = False, n = 20) #Set compute to False to load the precomputed predictions.
+methods_obj.Evaluate(n = 10, compute = False) #Set compute to False to load the precomputed predictions.
+methods_obj.top_n_recommendation(movie_obj, test_user, compute = False, n = 10) #Set compute to False to load the precomputed predictions.

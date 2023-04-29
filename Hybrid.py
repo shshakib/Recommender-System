@@ -17,13 +17,12 @@ class Hybrid(surprise.AlgoBase):
     def estimate(self, u, i):
         sum_scores = 0
         sum_weights = 0
-        for i in range(len(self.methods)):
-            if isinstance(self.methods[i], surprise.KNNBasic):
-                sum_scores += self.methods[i].estimate(u, i)[0] * self.weights[i]
+        for idx in range(len(self.methods)):
+            if isinstance(self.methods[idx], surprise.KNNBasic):
+                sum_scores += self.methods[idx].estimate(u, i)[0] * self.weights[idx]
             else:
-                sum_scores += self.methods[i].estimate(u, i) * self.weights[i]
-            sum_weights += self.weights[i]
-            
+                sum_scores += self.methods[idx].estimate(u, i) * self.weights[idx]
+            sum_weights += self.weights[idx]  
         return sum_scores / sum_weights
 
     
