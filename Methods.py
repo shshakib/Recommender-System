@@ -3,6 +3,7 @@ from Metrics import Metrics
 import numpy as np
 import pickle
 import os
+import gzip
 
 class Methods:
 
@@ -27,8 +28,9 @@ class Methods:
             if compute == True:
                 method_obj.fit(self.sliced_dataset.get_train_dataset())
                 predictions = method_obj.test(self.sliced_dataset.get_test_dataset())
-                file_path = os.path.join(precomputed_folder, method_name + '_predictions.pkl')
-                pickle.dump(predictions, open(file_path, 'wb'))
+                file_path = os.path.join(precomputed_folder, method_name + '_predictions.pkl.gz')
+                with gzip.open(file_path, 'wb') as f:
+                    pickle.dump(predictions, f)
                 metrics["RMSE"] = Metrics.RMSE(predictions)
                 metrics["MAE"] = Metrics.MAE(predictions)
 
@@ -36,27 +38,32 @@ class Methods:
                 method_obj.fit(self.sliced_dataset.get_leave_one_out_train_dataset())
                 leave_one_predictions = method_obj.test(self.sliced_dataset.get_leave_one_out_test_dataset())        
                 all_predictions = method_obj.test(self.sliced_dataset.get_leave_one_out_antitest_dataset())
-                file_path = os.path.join(precomputed_folder, method_name + '_leave_one_predictions.pkl')
-                pickle.dump(leave_one_predictions, open(file_path, 'wb'))
-                file_path = os.path.join(precomputed_folder, method_name + '_all_predictions.pkl')
-                pickle.dump(all_predictions, open(file_path, 'wb'))
+                file_path = os.path.join(precomputed_folder, method_name + '_leave_one_predictions.pkl.gz')
+                with gzip.open(file_path, 'wb') as f:
+                    pickle.dump(leave_one_predictions, f)
+                file_path = os.path.join(precomputed_folder, method_name + '_all_predictions.pkl.gz')
+                with gzip.open(file_path, 'wb') as f:
+                    pickle.dump(all_predictions, f)
                 
                 #Top n recommentaion for each user
                 top_n_predicted = Metrics.get_top_n(all_predictions, n)
                 metrics["HR"] = Metrics.hit_rate(top_n_predicted, leave_one_predictions)
             else:
-                file_path = os.path.join(precomputed_folder, method_name + '_predictions.pkl')
-                predictions = pickle.load(open(file_path, 'rb'))
+                file_path = os.path.join(precomputed_folder, method_name + '_predictions.pkl.gz')
+                with gzip.open(file_path, 'rb') as f:
+                    predictions = pickle.load(f)
                 metrics["RMSE"] = Metrics.RMSE(predictions)
                 metrics["MAE"] = Metrics.MAE(predictions)
+
+                file_path = os.path.join(precomputed_folder, method_name + '_all_predictions.pkl.gz')
+                with gzip.open(file_path, 'rb') as f:
+                    all_predictions = pickle.load(f)
                 
-                file_path = os.path.join(precomputed_folder, method_name + '_all_predictions.pkl')
-                all_predictions = pickle.load(open(file_path, 'rb'))
-                file_path = os.path.join(precomputed_folder, method_name + '_leave_one_predictions.pkl')
-                leave_one_predictions = pickle.load(open(file_path, 'rb'))
+                file_path = os.path.join(precomputed_folder, method_name + '_leave_one_predictions.pkl.gz')
+                with gzip.open(file_path, 'rb') as f:
+                    leave_one_predictions = pickle.load(f)
                 top_n_predicted = Metrics.get_top_n(all_predictions, n)
                 metrics["HR"] = Metrics.hit_rate(top_n_predicted, leave_one_predictions)
-
 
             result[method_name] = metrics.copy()
         print("{:<40} {:<10} {:<10} {:<10}".format("Methods", "RMSE", "MAE", "HR"))
@@ -64,6 +71,7 @@ class Methods:
             print("{:<40} {:<10.4f} {:<10.4f} {:<10.4f}".format(method, value["RMSE"], value["MAE"], value["HR"]))
 
         return metrics
+
     
     def top_n_recommendation(self, movie_obj, test_user=85, compute = True, n=10):
         
@@ -92,11 +100,8 @@ class Methods:
                 if movie_obj.get_movie_name(int(movie_id)) != '':
                     recommendations.append((int(movie_id), estimated_rating))
             
-            #print((recommendations[150:160]))
             recommendations.sort(key=lambda x: x[1], reverse=True)
-            #print((recommendations[150:160]))
             
             print("{:<10} {:<40} {:<10}".format("ID", "Name", "Rating"))
             for ratings in recommendations[:n]:
                 print("{:<10} {:<40} {:<10.4f}".format(ratings[0], movie_obj.get_movie_name(ratings[0]), ratings[1]))
-            #del recommendations
